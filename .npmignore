@@ -1,0 +1,17 @@
+# Dev tooling
+.fallow/
+.fallowrc.json
+.github/
+.gitignore
+bun.lock
+bunfig.toml
+
+# Project docs
+CLAUDE.md
+PLAN.md
+
+# Build / test artifacts
+coverage/
+node_modules/
+scripts/
+index.test.ts

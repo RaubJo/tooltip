@@ -1,0 +1,12 @@
+{
+    "entry": ["index.ts", "core.ts", "index.test.ts"],
+    "ignorePatterns": [
+        "*test*",
+        "scripts/**",
+        "coverage/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
+    ]
+}
