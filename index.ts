@@ -1,1 +1,5 @@
-console.log("Hello via Bun!");
+import { Tooltip } from "./src/Tooltip";
+
+Tooltip.boot();
+
+export { Tooltip };

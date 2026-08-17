@@ -1,0 +1,36 @@
+.tooltip {
+	--tooltip-background: #111;
+	--tooltip-color: #fff;
+
+	--tooltip-radius: 6px;
+
+	--tooltip-padding-x: 8px;
+	--tooltip-padding-y: 4px;
+
+	--tooltip-font-size: 0.75rem;
+
+	--tooltip-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 2147483647;
+	max-width: 20rem;
+
+	padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
+	border-radius: var(--tooltip-radius);
+
+	background: var(--tooltip-background);
+	color: var(--tooltip-color);
+	font-size: var(--tooltip-font-size);
+	line-height: 1.4;
+	box-shadow: var(--tooltip-shadow);
+
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.1s ease;
+}
+
+.tooltip[data-state="open"] {
+	opacity: 1;
+}
