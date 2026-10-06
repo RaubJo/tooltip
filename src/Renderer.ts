@@ -6,7 +6,7 @@ import type { Placement } from "./constants";
  */
 export class Renderer {
 	private elements = new Map<string, HTMLElement>();
-	private describedByBackup = new WeakMap<Element, string | null>();
+	protected describedByBackup = new Map<Element, string | null>();
 	private nextId = 1;
 
 	// ponytail: explicit no-op constructor works around a bun/JSC coverage
@@ -56,6 +56,7 @@ export class Renderer {
 	}
 
 	destroy(): void {
+		for (const anchor of this.describedByBackup.keys()) this.restoreDescribedBy(anchor);
 		for (const el of this.elements.values()) el.remove();
 		this.elements.clear();
 	}
