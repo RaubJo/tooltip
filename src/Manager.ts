@@ -35,6 +35,8 @@ export class Manager {
 	protected anchorObserver: MutationObserver | null = null;
 	private showTimer: ReturnType<typeof setTimeout> | null = null;
 	private hideTimer: ReturnType<typeof setTimeout> | null = null;
+	/** Set by a touch, cleared by a key: focus that follows a tap never shows a tooltip. */
+	private touched = false;
 
 	private defaults: TooltipOptions = { ...DEFAULT_OPTIONS };
 	private renderer = new Renderer();
@@ -57,7 +59,8 @@ export class Manager {
 
 		document.addEventListener("pointerover", this.onPointerOver, { signal });
 		document.addEventListener("pointerout", this.onPointerOut, { signal });
-		document.addEventListener("pointerdown", this.onPointerDown, { signal });
+		// Capture: React Aria focuses tabs/buttons inside its own pointerdown, before this would bubble here.
+		document.addEventListener("pointerdown", this.onPointerDown, { signal, capture: true });
 		document.addEventListener("focusin", this.onFocusIn, { signal });
 		document.addEventListener("focusout", this.onFocusOut, { signal });
 		document.addEventListener("keydown", this.onKeyDown, { signal });
@@ -84,6 +87,8 @@ export class Manager {
 	}
 
 	private onPointerOver = (event: PointerEvent): void => {
+		// Touch has no hover: a tap would otherwise pop a tooltip that sticks.
+		if (event.pointerType === "touch") return;
 		const anchor = closestAnchor(event.target);
 		if (!anchor) return;
 		this.activate(anchor);
@@ -97,13 +102,15 @@ export class Manager {
 	};
 
 	protected onPointerDown = (event: PointerEvent): void => {
+		this.touched = event.pointerType === "touch";
 		if (closestAnchor(event.target) !== this.activeAnchor) return;
 		this.close();
 	};
 
 	private onFocusIn = (event: FocusEvent): void => {
 		const anchor = closestAnchor(event.target);
-		if (!anchor || isFocusHidden(event.target)) return;
+		// Mobile browsers report script focus after a tap as :focus-visible, so check touch too.
+		if (!anchor || this.touched || isFocusHidden(event.target)) return;
 		this.activate(anchor);
 	};
 
@@ -115,6 +122,7 @@ export class Manager {
 	};
 
 	private onKeyDown = (event: KeyboardEvent): void => {
+		this.touched = false;
 		if (event.key !== "Escape" || this.state === "closed") return;
 		this.clearTimers();
 		this.close();

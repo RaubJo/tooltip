@@ -15,6 +15,10 @@
 	top: 0;
 	left: 0;
 	z-index: 2147483647;
+	/* Its own width, not whatever room is left of where it's placed: near the
+	   viewport's edge a shrink-to-fit width changes with every reposition, which
+	   resizes it, which repositions it — a ResizeObserver loop. */
+	width: max-content;
 	max-width: 20rem;
 
 	padding: var(--tooltip-padding-y) var(--tooltip-padding-x);

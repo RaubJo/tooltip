@@ -36,6 +36,14 @@ describe("discovery", () => {
 		expect(openTooltip()).toBeNull();
 	});
 
+	test("ignores touch pointers", async () => {
+		document.body.innerHTML = `<button data-tooltip="Hello">Hi</button>`;
+		const button = document.querySelector("button")!;
+		button.dispatchEvent(new PointerEvent("pointerover", { bubbles: true, pointerType: "touch" }));
+		await sleep(10);
+		expect(openTooltip()).toBeNull();
+	});
+
 	test("recognizes anchors inserted after boot", async () => {
 		document.body.innerHTML = `<div id="container"></div>`;
 		document.getElementById("container")!.innerHTML = `<button data-tooltip="Later">Late</button>`;
@@ -175,6 +183,21 @@ describe("keyboard", () => {
 		button.focus();
 		await sleep(10);
 		expect(openTooltip()).toBeNull();
+	});
+
+	test("focus after a touch doesn't show, until a key is pressed", async () => {
+		document.body.innerHTML = `<button data-tooltip="Hi">Hi</button>`;
+		const button = document.querySelector("button")!;
+
+		button.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerType: "touch" }));
+		button.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+		await sleep(10);
+		expect(openTooltip()).toBeNull();
+
+		document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+		button.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+		await sleep(10);
+		expect(openTooltip()).not.toBeNull();
 	});
 
 	test("Escape hides an open tooltip", async () => {
